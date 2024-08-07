@@ -21,8 +21,15 @@
 #' @importFrom rtracklayer import.chain
 #' @importFrom rtracklayer liftOver
 #' @author G Yu
-enrichPeakOverlap <- function(queryPeak, targetPeak, TxDb=NULL, pAdjustMethod="BH", nShuffle=1000,
-                              chainFile=NULL, pool=TRUE, mc.cores=detectCores()-1, verbose=TRUE) {
+enrichPeakOverlap <- function(queryPeak, 
+                              targetPeak, 
+                              TxDb = NULL, 
+                              pAdjustMethod = "BH", 
+                              nShuffle = 1000,
+                              chainFile = NULL, 
+                              pool = TRUE, 
+                              mc.cores = detectCores() - 1, 
+                              verbose = TRUE) {
     TxDb <- loadTxDb(TxDb)
     query.gr <- loadPeak(queryPeak)
     if (is(targetPeak[1], "GRanges") || is(targetPeak[[1]], "GRanges")) {
@@ -43,14 +50,16 @@ enrichPeakOverlap <- function(queryPeak, targetPeak, TxDb=NULL, pAdjustMethod="B
                                             mc.cores=mc.cores,verbose=verbose)
     } else {
         res_list <- lapply(1:length(target.gr), function(i) {
-            enrichPeakOverlap(queryPeak = queryPeak,
-                              targetPeak = target.gr[i],
-                              TxDb = TxDb,
-                              pAdjustMethod = pAdjustMethod,
-                              nShuffle = nShuffle,
-                              chainFile = chainFile,
-                              mc.cores = mc.cores,
-                              verbose = verbose)
+            enrichPeakOverlap(
+                queryPeak = queryPeak,
+                targetPeak = target.gr[i],
+                TxDb = TxDb,
+                pAdjustMethod = pAdjustMethod,
+                nShuffle = nShuffle,
+                chainFile = chainFile,
+                mc.cores = mc.cores,
+                verbose = verbose
+            )
         })
         res <- do.call("rbind", res_list)
         return(res)
@@ -60,14 +69,14 @@ enrichPeakOverlap <- function(queryPeak, targetPeak, TxDb=NULL, pAdjustMethod="B
         p2 <- p1 <- padj <- NA
     } else {
         p1 <- p.ol$pvalueOver
-		p2 <- p.ol$pvalueUnder
+        p2 <- p.ol$pvalueUnder
         padj <- p.adjust(p1, method=pAdjustMethod)
     }
 
     ol <- p.ol$overlap
-	fc <- p.ol$foldchange
-	fc.l95 <- p.ol$foldchangeL95
-	fc.u95 <- p.ol$foldchangeU95
+    fc <- p.ol$foldchange
+    fc.l95 <- p.ol$foldchangeL95
+    fc.u95 <- p.ol$foldchangeU95
 
     if (is(queryPeak, "GRanges")) {
         qSample <- "queryPeak"
@@ -85,17 +94,19 @@ enrichPeakOverlap <- function(queryPeak, targetPeak, TxDb=NULL, pAdjustMethod="B
         tSample <- basename(targetFiles)
     }
 
-    res <- data.frame(qSample=qSample,
-                      tSample=tSample,
-                      qLen=length(query.gr),
-                      tLen=unlist(lapply(target.gr, length)),
-                      N_OL=ol,
-					  foldchange=fc,
-					  foldchangeL95=fc.l95,
-					  foldchangeU95=fc.u95,
-                      pvalueOver=p1,
-					  pvalueUnder=p2,
-                      p.adjust=padj)
+    res <- data.frame(
+        qSample=qSample,
+        tSample=tSample,
+        qLen=length(query.gr),
+        tLen=unlist(lapply(target.gr, length)),
+        N_OL=ol,
+        foldchange=fc,
+        foldchangeL95=fc.l95,
+        foldchangeU95=fc.u95,
+        pvalueOver=p1,
+        pvalueUnder=p2,
+        p.adjust=padj
+    )
 
     return(res)
 }
@@ -126,7 +137,7 @@ enrichOverlap.peak.internal <- function(query.gr, target.gr, TxDb, nShuffle=1000
     qLen <- unlist(qLen)
     # query ratio
     qr <- qLen/len
-	
+
 
     if (nShuffle < 1) {
         res <- list(pvalueOver=NULL, pvalueUnder=NULL, overlap=qLen, foldchange=NULL, foldchangeL95 = NULL, foldchangeU95 = NULL)
@@ -161,17 +172,17 @@ enrichOverlap.peak.internal <- function(query.gr, target.gr, TxDb, nShuffle=1000
     }
 
     rr <- unlist(rr) # random ratio
-	
-	fc<-unlist(lapply(qr, function(q) q/mean(rr)))
-	fc.l95<-unlist(lapply(qr, function(q) q/quantile(rr, 0.975)))
-	fc.u95<-unlist(lapply(qr, function(q) q/quantile(rr, 0.025)))
-	
+
+    fc<-unlist(lapply(qr, function(q) q/mean(rr)))
+    fc.l95<-unlist(lapply(qr, function(q) q/quantile(rr, 0.975)))
+    fc.u95<-unlist(lapply(qr, function(q) q/quantile(rr, 0.025)))
+
     # p <- lapply(qr, function(q) mean(rr>q))
-	# this is calculation of one-side p for over enrichment
+    # this is calculation of one-side p for over enrichment
     p1 <- unlist(lapply(qr, function(q) (sum(rr>q)+1)/(length(rr)+1)))
-	# add in calculation of one-sided p for under enrichment
-	p2 <- unlist(lapply(qr, function(q) (sum(rr<q)+1)/(length(rr)+1)))
-	
+    # add in calculation of one-sided p for under enrichment
+    p2 <- unlist(lapply(qr, function(q) (sum(rr<q)+1)/(length(rr)+1)))
+
     res <- list(pvalueOver=p1, pvalueUnder=p2, overlap=qLen, foldchange=fc, foldchangeL95 = fc.l95, foldchangeU95 = fc.u95)
     return(res)
 }
@@ -204,14 +215,14 @@ loadTxDb <- function(TxDb) {
 
 # function to count min overlap
 countOverlapMin<-function(query, test, min = 0.5){
-	# if provided as proportion then looking for overlap proportional to query region
-	if(min < 1){
-		whichOverlap<-findOverlaps(test,query)
-		testLengths<-width(test[queryHits(whichOverlap)])
-		thresLength<-min*testLengths
-		
-	} else {
-		thresLength = min
-	}
-	return(sum(width(intersect(test, query)) > thresLength))
+    # if provided as proportion then looking for overlap proportional to query region
+    if(min < 1){
+        whichOverlap<-findOverlaps(test,query)
+        testLengths<-width(test[queryHits(whichOverlap)])
+        thresLength<-min*testLengths
+
+    } else {
+        thresLength = min
+    }
+    return(sum(width(intersect(test, query)) > thresLength))
 }

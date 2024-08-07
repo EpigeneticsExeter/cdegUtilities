@@ -8,8 +8,8 @@
 #' @author E Hannon
 #' @export
 getScanDate<-function(idat){
-	tmp<-readIDAT(idat)$RunInfo
-	return(unique(unlist(lapply(strsplit(tmp[which(tmp[,"BlockType"] == "Scan"),1], " "), head, n = 1)))[1])
+    tmp<-readIDAT(idat)$RunInfo
+    return(unique(unlist(lapply(strsplit(tmp[which(tmp[,"BlockType"] == "Scan"),1], " "), head, n = 1)))[1])
 }
 
 #' Reformat beta matrix so rownames ordered to match a specificed list
@@ -22,8 +22,8 @@ getScanDate<-function(idat){
 #' @author E Hannon
 #' @export
 reformatBetas <- function(bMat, pList){
-	index<-match(pList, rownames(bMat))
-	return(bMat[index,])
+    index<-match(pList, rownames(bMat))
+    return(bMat[index,])
 }
 
 
@@ -36,8 +36,8 @@ reformatBetas <- function(bMat, pList){
 #' @author E Hannon
 #' @export
 estlambda<-function(pvals){
-	z = qnorm(pvals / 2)
-	## calculates lambda
-	lambda = round(median(z^2) / 0.454, 3)
-	return(lambda)
+    z = qnorm(pvals / 2)
+    ## calculates lambda
+    lambda = round(median(z^2) / 0.454, 3)
+    return(lambda)
 }
