@@ -1,4 +1,4 @@
-# editted version of enrichPeakOverlap from CHIPSeeker package to 
+# editted version of enrichPeakOverlap from CHIPSeeker package to
 # 1) report FC statistic
 # 2) test both over and under enrichment.
 # calculate fold change statistic as ratio of obeserved overlap to mean overlap.
@@ -21,14 +21,14 @@
 #' @importFrom rtracklayer import.chain
 #' @importFrom rtracklayer liftOver
 #' @author G Yu
-enrichPeakOverlap <- function(queryPeak, 
-                              targetPeak, 
-                              TxDb = NULL, 
-                              pAdjustMethod = "BH", 
+enrichPeakOverlap <- function(queryPeak,
+                              targetPeak,
+                              TxDb = NULL,
+                              pAdjustMethod = "BH",
                               nShuffle = 1000,
-                              chainFile = NULL, 
-                              pool = TRUE, 
-                              mc.cores = detectCores() - 1, 
+                              chainFile = NULL,
+                              pool = TRUE,
+                              mc.cores = detectCores() - 1,
                               verbose = TRUE) {
     TxDb <- loadTxDb(TxDb)
     query.gr <- loadPeak(queryPeak)
@@ -46,8 +46,14 @@ enrichPeakOverlap <- function(queryPeak,
     }
 
     if (pool) {
-        p.ol <- enrichOverlap.peak.internal(query.gr, target.gr, TxDb, nShuffle,
-                                            mc.cores=mc.cores,verbose=verbose)
+        p.ol <- enrichOverlap.peak.internal(
+            query.gr,
+            target.gr,
+            TxDb,
+            nShuffle,
+            mc.cores = mc.cores,
+            verbose = verbose
+        )
     } else {
         res_list <- lapply(1:length(target.gr), function(i) {
             enrichPeakOverlap(
@@ -87,7 +93,7 @@ enrichPeakOverlap <- function(queryPeak,
 
     if (is.null(targetFiles)) {
         tSample <- names(target.gr)
-        if(is.null(tSample)) {
+        if (is.null(tSample)) {
             tSample <- paste0("targetPeak", seq_along(target.gr))
         }
     } else {
@@ -95,17 +101,17 @@ enrichPeakOverlap <- function(queryPeak,
     }
 
     res <- data.frame(
-        qSample=qSample,
-        tSample=tSample,
-        qLen=length(query.gr),
-        tLen=unlist(lapply(target.gr, length)),
-        N_OL=ol,
-        foldchange=fc,
-        foldchangeL95=fc.l95,
-        foldchangeU95=fc.u95,
-        pvalueOver=p1,
-        pvalueUnder=p2,
-        p.adjust=padj
+        qSample = qSample,
+        tSample = tSample,
+        qLen = length(query.gr),
+        tLen = unlist(lapply(target.gr, length)),
+        N_OL = ol,
+        foldchange = fc,
+        foldchangeL95 = fc.l95,
+        foldchangeU95 = fc.u95,
+        pvalueOver = p1,
+        pvalueUnder = p2,
+        p.adjust = padj
     )
 
     return(res)
@@ -116,7 +122,12 @@ enrichPeakOverlap <- function(queryPeak,
 #' @importFrom utils setTxtProgressBar
 #' @importFrom parallel mclapply
 #' @importFrom parallel detectCores
-enrichOverlap.peak.internal <- function(query.gr, target.gr, TxDb, nShuffle=1000, mc.cores=detectCores()-1, verbose=TRUE) {
+enrichOverlap.peak.internal <- function(query.gr,
+                                        target.gr,
+                                        TxDb,
+                                        nShuffle = 1000,
+                                        mc.cores = detectCores() - 1,
+                                        verbose = TRUE) {
     if (verbose) {
         cat(">> permutation test of peak overlap...\t\t",
             format(Sys.time(), "%Y-%m-%d %X"), "\n")
@@ -125,7 +136,7 @@ enrichOverlap.peak.internal <- function(query.gr, target.gr, TxDb, nShuffle=1000
     idx <- sample(1:length(target.gr), nShuffle, replace=TRUE)
     len <- unlist(lapply(target.gr, length))
 
-    if(Sys.info()[1] == "Windows") {
+    if (Sys.info()[1] == "Windows") {
         qLen <- lapply(target.gr, function(tt) {
             length(intersect(query.gr, tt))
         })
@@ -140,7 +151,13 @@ enrichOverlap.peak.internal <- function(query.gr, target.gr, TxDb, nShuffle=1000
 
 
     if (nShuffle < 1) {
-        res <- list(pvalueOver=NULL, pvalueUnder=NULL, overlap=qLen, foldchange=NULL, foldchangeL95 = NULL, foldchangeU95 = NULL)
+        res <- list(
+            pvalueOver = NULL,
+            pvalueUnder = NULL,
+            overlap = qLen,
+            foldchange = NULL,
+            foldchangeL95 = NULL,
+            foldchangeU95 = NULL)
         return(res)
     }
 
@@ -183,7 +200,14 @@ enrichOverlap.peak.internal <- function(query.gr, target.gr, TxDb, nShuffle=1000
     # add in calculation of one-sided p for under enrichment
     p2 <- unlist(lapply(qr, function(q) (sum(rr<q)+1)/(length(rr)+1)))
 
-    res <- list(pvalueOver=p1, pvalueUnder=p2, overlap=qLen, foldchange=fc, foldchangeL95 = fc.l95, foldchangeU95 = fc.u95)
+    res <- list(
+        pvalueOver = p1,
+        pvalueUnder = p2,
+        overlap = qLen,
+        foldchange = fc,
+        foldchangeL95 = fc.l95,
+        foldchangeU95 = fc.u95
+    )
     return(res)
 }
 
@@ -214,15 +238,15 @@ loadTxDb <- function(TxDb) {
 }
 
 # function to count min overlap
-countOverlapMin<-function(query, test, min = 0.5){
+countOverlapMin<-function(query, test, min = 0.5) {
     # if provided as proportion then looking for overlap proportional to query region
-    if(min < 1){
+    if(min < 1) {
         whichOverlap<-findOverlaps(test,query)
         testLengths<-width(test[queryHits(whichOverlap)])
         thresLength<-min*testLengths
 
     } else {
-        thresLength = min
+        thresLength <- min
     }
     return(sum(width(intersect(test, query)) > thresLength))
 }
