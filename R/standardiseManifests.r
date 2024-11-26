@@ -2,19 +2,18 @@ standardiseManifests <- function(arrayType,
                                  referenceDirectory,
                                  probeMatchingIndex) {
   if (arrayType == "450K") {
+    # Loads probeAnnot (needs generalising in the future)
     load(file.path(
       referenceDirectory,
       "450K_reference",
       "AllProbeIlluminaAnno.Rdata"
     ))
-    probeAnnot <- probeAnnot[match(probeMatchingIndex, probeAnnot$TargetID), ]
-    colnames(probeAnnot) <- gsub(
+    manifest <- probeAnnot[match(probeMatchingIndex, probeAnnot$TargetID), ]
+    colnames(manifest) <- gsub(
       "INFINIUM_DESIGN_TYPE",
       "designType",
-      colnames(probeAnnot)
+      colnames(manifest)
     )
-    print("loaded 450k manifest")
-    return(probeAnnot)
   }
 
   if (arrayType == "V1") {
@@ -23,7 +22,7 @@ standardiseManifests <- function(arrayType,
       "EPICArray",
       "EPIC.anno.GRCh38.tsv"
     )
-    probeAnnot <- data.table::fread(
+    manifest <- data.table::fread(
       epic1Manifest,
       fill = TRUE,
       header = TRUE,
@@ -31,8 +30,7 @@ standardiseManifests <- function(arrayType,
       stringsAsFactors = FALSE,
       data.table = FALSE
     )
-    probeAnnot <- probeAnnot[match(probeMatchingIndex, probeAnnot$probeID), ]
-    return(probeAnnot)
+    manifest <- manifest[match(probeMatchingIndex, manifest$probeID), ]
   }
 
   if (arrayType == "V2") {
@@ -41,7 +39,7 @@ standardiseManifests <- function(arrayType,
       "EPICArray",
       "EPIC-8v2-0_A1.csv"
     )
-    probeAnnot <- data.table::fread(
+    manifest <- data.table::fread(
       epic2Manifest,
       skip = 7,
       fill = TRUE,
@@ -50,16 +48,16 @@ standardiseManifests <- function(arrayType,
       stringsAsFactors = FALSE,
       data.table = FALSE
     )
-    probeAnnot <- probeAnnot[
-      match(probeMatchingIndex, probeAnnot$IlmnID),
+    manifest <- manifest[
+      match(probeMatchingIndex, manifest$IlmnID),
       c("CHR", "Infinium_Design_Type")
     ]
-    colnames(probeAnnot) <- gsub(
+    colnames(manifest) <- gsub(
       "Infinium_Design_Type",
       "designType",
-      colnames(probeAnnot)
+      colnames(manifest)
     )
     print("loaded EpicV2 manifest")
-    return(probeAnnot)
   }
+  return(manifest)
 }
