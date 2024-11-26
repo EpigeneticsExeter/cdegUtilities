@@ -14,6 +14,7 @@ standardiseManifests <- function(arrayType,
       "designType",
       colnames(manifest)
     )
+    manifest[["CHR"]] <- paste0("chr", manifest[["CHR"]])
   }
 
   if (arrayType == "V1") {
