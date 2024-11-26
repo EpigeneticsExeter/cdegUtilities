@@ -18,13 +18,13 @@ standardiseManifests <- function(arrayType,
   }
 
   if (arrayType == "V1") {
-    epic1Manifest <- file.path(
+    epicV1Manifest <- file.path(
       referenceDirectory,
       "EPICArray",
       "EPIC.anno.GRCh38.tsv"
     )
     manifest <- data.table::fread(
-      epic1Manifest,
+      epicV1Manifest,
       fill = TRUE,
       header = TRUE,
       sep = "\t",
@@ -35,13 +35,13 @@ standardiseManifests <- function(arrayType,
   }
 
   if (arrayType == "V2") {
-    epic2Manifest <- file.path(
+    epicV2Manifest <- file.path(
       referenceDirectory,
       "EPICArray",
       "EPIC-8v2-0_A1.csv"
     )
     manifest <- data.table::fread(
-      epic2Manifest,
+      epicV2Manifest,
       skip = 7,
       fill = TRUE,
       header = TRUE,
