@@ -16,6 +16,17 @@
 #' @return A data frame with varying columns. Certain columns are standardised:
 #'  designType - The infinium design type
 #'  CHR - The chromosome number in the form 'chrxyz'
+#'
+#' @examples manifest <- readManifest(
+#'   "path/to/references",
+#'   rownames(beta_matrix),
+#'   "V1"
+#' )
+#' manifest <- readManifest(
+#'   "path/to/references",
+#'   Biobase::fData(gds_file)[["Probe_ID"]],
+#'   "450K"
+#' )
 readManifest <- function(referenceDirectory,
                          probeMatchingIndex,
                          arrayType = c("450K", "V1", "V2")) {
