@@ -1,14 +1,13 @@
 standardiseManifests <- function(arrayType,
                                  referenceDirectory,
-                                 gfile,
-                                 rawbetas) {
+                                 probeMatchingIndex) {
   if (arrayType == "450K") {
     load(file.path(
       referenceDirectory,
       "450K_reference",
       "AllProbeIlluminaAnno.Rdata"
     ))
-    probeAnnot <- probeAnnot[match(rownames(rawbetas), probeAnnot$TargetID), ]
+    probeAnnot <- probeAnnot[match(probeMatchingIndex, probeAnnot$TargetID), ]
     colnames(probeAnnot) <- gsub(
       "INFINIUM_DESIGN_TYPE",
       "designType",
@@ -32,7 +31,7 @@ standardiseManifests <- function(arrayType,
       stringsAsFactors = FALSE,
       data.table = FALSE
     )
-    probeAnnot <- probeAnnot[match(rownames(rawbetas), probeAnnot$probeID), ]
+    probeAnnot <- probeAnnot[match(probeMatchingIndex, probeAnnot$probeID), ]
     return(probeAnnot)
   }
 
@@ -52,7 +51,7 @@ standardiseManifests <- function(arrayType,
       data.table = FALSE
     )
     probeAnnot <- probeAnnot[
-      match(rownames(rawbetas), probeAnnot$IlmnID),
+      match(probeMatchingIndex, probeAnnot$IlmnID),
       c("CHR", "Infinium_Design_Type")
     ]
     colnames(probeAnnot) <- gsub(
