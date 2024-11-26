@@ -1,6 +1,6 @@
-standardiseManifests <- function(arrayType,
-                                 referenceDirectory,
-                                 probeMatchingIndex) {
+readManifest <- function(arrayType,
+                         referenceDirectory,
+                         probeMatchingIndex) {
   if (arrayType == "450K") {
     # Loads probeAnnot (needs generalising in the future)
     load(file.path(
