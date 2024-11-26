@@ -19,14 +19,29 @@
 readManifest <- function(referenceDirectory,
                          probeMatchingIndex,
                          arrayType = c("450K", "V1", "V2")) {
+  if (!file.exists(referenceDirectory)) {
+    stop(
+      "Reference directory: ",
+      referenceDirectory,
+      "Does not exist, please check this."
+    )
+  }
   arrayType <- match.arg(arrayType)
   if (arrayType == "450K") {
-    # Loads probeAnnot (needs generalising in the future)
-    load(file.path(
+    hm450Kmanifest <- file.path(
       referenceDirectory,
       "450K_reference",
       "AllProbeIlluminaAnno.Rdata"
-    ))
+    )
+    if (!file.exists(hm450Kmanifest)) {
+      stop(
+        "Manifest: ",
+        hm450Kmanifest,
+        "Does not exist, please check this."
+      )
+    }
+    # Loads probeAnnot (needs generalising in the future)
+    load(hm450Kmanifest)
     manifest <- probeAnnot[match(probeMatchingIndex, probeAnnot$TargetID), ]
     colnames(manifest) <- gsub(
       "INFINIUM_DESIGN_TYPE",
@@ -42,6 +57,13 @@ readManifest <- function(referenceDirectory,
       "EPICArray",
       "EPIC.anno.GRCh38.tsv"
     )
+    if (!file.exists(epicV1Manifest)) {
+      stop(
+        "Manifest: ",
+        epicV1Manifest,
+        "Does not exist, please check this."
+      )
+    }
     manifest <- data.table::fread(
       epicV1Manifest,
       fill = TRUE,
@@ -59,6 +81,13 @@ readManifest <- function(referenceDirectory,
       "EPICArray",
       "EPIC-8v2-0_A1.csv"
     )
+    if (!file.exists(epicV2Manifest)) {
+      stop(
+        "Manifest: ",
+        epicV2Manifest,
+        "Does not exist, please check this."
+      )
+    }
     manifest <- data.table::fread(
       epicV2Manifest,
       skip = 7,
