@@ -49,16 +49,12 @@ standardiseManifests <- function(arrayType,
       stringsAsFactors = FALSE,
       data.table = FALSE
     )
-    manifest <- manifest[
-      match(probeMatchingIndex, manifest$IlmnID),
-      c("CHR", "Infinium_Design_Type")
-    ]
+    manifest <- manifest[match(probeMatchingIndex, manifest$IlmnID), ]
     colnames(manifest) <- gsub(
       "Infinium_Design_Type",
       "designType",
       colnames(manifest)
     )
-    print("loaded EpicV2 manifest")
   }
   return(manifest)
 }
