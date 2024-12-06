@@ -27,6 +27,7 @@
 #'   Biobase::fData(gds_file)[["Probe_ID"]],
 #'   "450K"
 #' )
+#' @export
 readManifest <- function(referenceDirectory,
                          probeMatchingIndex,
                          arrayType = c("450K", "V1", "V2")) {

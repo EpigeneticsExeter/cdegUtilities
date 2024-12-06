@@ -3,6 +3,7 @@
 export(enrichPeakOverlap)
 export(estlambda)
 export(getScanDate)
+export(readManifest)
 export(reformatBetas)
 import(GenomeInfoDb)
 importFrom(TxDb.Hsapiens.UCSC.hg19.knownGene,TxDb.Hsapiens.UCSC.hg19.knownGene)
