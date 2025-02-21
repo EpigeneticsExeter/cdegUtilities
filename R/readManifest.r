@@ -56,6 +56,7 @@ readManifest <- function(manifestFilePath,
   }
 
   manifest <- normaliseColumnNames(manifest)
+  checkRequiredColumns(manifest)
 
   manifest <- manifest[match(probeMatchingIndex, manifest$IlmnID), ]
   return(manifest)
@@ -76,6 +77,10 @@ normaliseColumnNames <- function(manifest) {
       colnames(manifest)
     )
   }
+  return(manifest)
+}
+
+checkRequiredColumns <- function(manifest) {
   if (!"IlmnID" %in% colnames(manifest)) {
     stop("Manifest file has no recognised IlmnID (Illumina ID) column.")
   }
@@ -85,5 +90,4 @@ normaliseColumnNames <- function(manifest) {
   if (!"designType" %in% colnames(manifest)) {
     stop("Manifest file has no recognised design type column.")
   }
-  return(manifest)
 }
