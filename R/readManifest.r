@@ -62,9 +62,6 @@ readManifest <- function(manifestFilePath,
 }
 
 normaliseColumnNames <- function(manifest) {
-  if (!"IlmnID" %in% colnames(manifest)) {
-    stop("Manifest file has no recognised IlmnID (Illumina ID) column.")
-  }
   if ("chr" %in% colnames(manifest)) {
     colnames(manifest) <- gsub(
       "chr",
@@ -78,6 +75,15 @@ normaliseColumnNames <- function(manifest) {
       "designType",
       colnames(manifest)
     )
+  }
+  if (!"IlmnID" %in% colnames(manifest)) {
+    stop("Manifest file has no recognised IlmnID (Illumina ID) column.")
+  }
+  if (!"CHR" %in% colnames(manifest)) {
+    stop("Manifest file has no recognised chromosome column.")
+  }
+  if (!"designType" %in% colnames(manifest)) {
+    stop("Manifest file has no recognised design type column.")
   }
   return(manifest)
 }
