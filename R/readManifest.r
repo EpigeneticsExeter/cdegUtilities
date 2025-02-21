@@ -3,8 +3,8 @@
 #' Reads in a manifest file that has a very specific file name depending on
 #' the given array type. Important columns are standardised by name and contents
 #'
-#' @param manifestFilePath This is a string pointing to the manifest file, expected
-#'  to be a csv file.
+#' @param manifestFilePath This is a string pointing to the manifest file,
+#'  expected to be a csv file.
 #' @param probeMatchingIndex This is a vector of probe IDs that are present
 #'  in your dataset. This could be obtained via extracting the rownames of your
 #'  raw beta matrix, or from a gds file that contains probe IDs.
@@ -30,6 +30,7 @@ readManifest <- function(manifestFilePath,
       "Does not exist, please check this."
     )
   }
+
   # Some manifest files contain a header, if so we ignore it
   firstLine <- readLines(file(manifestFilePath, "r"), n = 1)
   headerPresent <- !grepl("IlmnID", firstLine)
@@ -53,11 +54,30 @@ readManifest <- function(manifestFilePath,
       data.table = FALSE
     )
   }
+
+  manifest <- normaliseColumnNames(manifest)
+
   manifest <- manifest[match(probeMatchingIndex, manifest$IlmnID), ]
-  colnames(manifest) <- gsub(
-    "Infinium_Design_Type",
-    "designType",
-    colnames(manifest)
-  )
+  return(manifest)
+}
+
+normaliseColumnNames <- function(manifest) {
+  if (!"IlmnID" %in% colnames(manifest)) {
+    stop("Manifest file has no recognised IlmnID (Illumina ID) column.")
+  }
+  if ("chr" %in% colnames(manifest)) {
+    colnames(manifest) <- gsub(
+      "chr",
+      "CHR",
+      colnames(manifest)
+    )
+  }
+  if ("Infinium_Design_Type" %in% colnames(manifest)) {
+    colnames(manifest) <- gsub(
+      "Infinium_Design_Type",
+      "designType",
+      colnames(manifest)
+    )
+  }
   return(manifest)
 }
