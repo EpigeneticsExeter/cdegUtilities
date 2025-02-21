@@ -30,15 +30,29 @@ readManifest <- function(manifestFilePath,
       "Does not exist, please check this."
     )
   }
-  manifest <- data.table::fread(
-    manifestFilePath,
-    skip = 7,
-    fill = TRUE,
-    header = TRUE,
-    sep = ",",
-    stringsAsFactors = FALSE,
-    data.table = FALSE
-  )
+  # Some manifest files contain a header, if so we ignore it
+  firstLine <- readLines(file(manifestFilePath, "r"), n = 1)
+  headerPresent <- !grepl("IlmnID", firstLine)
+  if (headerPresent) {
+    manifest <- data.table::fread(
+      manifestFilePath,
+      skip = 7,
+      fill = TRUE,
+      header = TRUE,
+      sep = ",",
+      stringsAsFactors = FALSE,
+      data.table = FALSE
+    )
+  } else {
+    manifest <- data.table::fread(
+      manifestFilePath,
+      fill = TRUE,
+      header = TRUE,
+      sep = ",",
+      stringsAsFactors = FALSE,
+      data.table = FALSE
+    )
+  }
   manifest <- manifest[match(probeMatchingIndex, manifest$IlmnID), ]
   colnames(manifest) <- gsub(
     "Infinium_Design_Type",
