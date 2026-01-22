@@ -57,6 +57,7 @@ readManifest <- function(manifestFilePath,
 
   manifest <- normaliseColumnNames(manifest)
   checkRequiredColumns(manifest)
+  manifest <- normaliseChromosomeColumn(manifest)
 
   manifest <- manifest[match(probeMatchingIndex, manifest$IlmnID), ]
   return(manifest)
@@ -90,4 +91,17 @@ checkRequiredColumns <- function(manifest) {
   if (!"designType" %in% colnames(manifest)) {
     stop("Manifest file has no recognised design type column.")
   }
+}
+
+normaliseChromosomeColumn <- function(manifest) {
+  manifest$CHR <- ifelse(
+    is.na(manifest$CHR) | manifest$CHR == "",
+    NA,
+    ifelse(
+      grepl("^chr", manifest$CHR),
+      manifest$CHR,
+      paste0("chr", manifest$CHR)
+    )
+  )
+  return(manifest)
 }
