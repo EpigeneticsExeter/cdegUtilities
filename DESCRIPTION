@@ -6,6 +6,8 @@ Authors@R:
            comment = c(ORCID = "0000-0001-6840-072X")),
 		 person("Jessica", "Shields", , "j.m.shields@exeter.ac.uk", role = c("aut"),
            comment = c(ORCID = "0000-0001-6840-072X"))  )
+Imports: parallel, data.table, rtracklayer, GenomeInfoDb, TxDb.Hsapiens.UCSC.hg19.knownGene
+Remotes: bioc::rtracklayer, bioc::GenomeInfoDb, bioc::TxDb.Hsapiens.UCSC.hg19.knownGene
 Description: A collection of functions developed by members of the Complex Disease Epigenetics group to aid the preprocessing and analysis of a range of 'omics data. This functions are mainly developed for internal use on an as needed basic, and therefore potentially contain a random set of utilities. It may also contain adapted versions of functions from other packages. Where this is the case, the original source should be identified.
 License: Artistic License 2.0
 Encoding: UTF-8
